@@ -64,6 +64,26 @@ async function run() {
             res.send(result);
         });
 
+        // Get task by email API
+        app.get("/task/:email", async (req, res) => {
+            const email = req.params.email;
+
+            try {
+                const result = await taskCollection
+                    .find({ email: email })
+                    .toArray();
+                if (result.length === 0) {
+                    return res
+                        .status(404)
+                        .send({ message: "No tasks found for this email." });
+                }
+                res.status(200).send(result);
+            } catch (error) {
+                console.error("Error fetching tasks:", error);
+                res.status(500).send({ message: "Error fetching tasks." });
+            }
+        });
+
         //Put task api
         app.put("/task/:id", async (req, res) => {
             const { id } = req.params;
