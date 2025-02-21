@@ -31,6 +31,7 @@ async function run() {
         const database = client.db("todoTask");
 
         const userCollection = database.collection("users");
+        const taskCollection = database.collection("tasks");
 
         //User post api
         app.post("/user", async (req, res) => {
@@ -45,6 +46,14 @@ async function run() {
             }
 
             const result = await userCollection.insertOne(user);
+            res.send(result);
+        });
+
+        //Task post api
+        app.post("/task", async (req, res) => {
+            const task = req.body;
+
+            const result = await taskCollection.insertOne(task);
             res.send(result);
         });
 
