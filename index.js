@@ -57,6 +57,12 @@ async function run() {
             res.send(result);
         });
 
+        //Task get api
+        app.get("/tasks", async (req, res) => {
+            const result = await taskCollection.find().toArray();
+            res.send(result);
+        });
+
         // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
         console.log(
