@@ -63,6 +63,18 @@ async function run() {
             res.send(result);
         });
 
+        //Put task api
+        app.put("/task/:id", async (req, res) => {
+            const id = req.params.id;
+            const task = req.body;
+
+            const result = await taskCollection.updateOne(
+                { _id: id },
+                { $set: task }
+            );
+            res.send(result);
+        });
+
         // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
         console.log(
