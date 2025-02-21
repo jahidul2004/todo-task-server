@@ -75,6 +75,14 @@ async function run() {
             res.send(result);
         });
 
+        //Delete task api
+        app.delete("/task/:id", async (req, res) => {
+            const id = req.params.id;
+
+            const result = await taskCollection.deleteOne({ _id: id });
+            res.send(result);
+        });
+
         // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
         console.log(
