@@ -3,6 +3,7 @@ const app = express();
 const port = process.env.port || 3000;
 const cors = require("cors");
 require("dotenv").config();
+const { ObjectId } = require("mongodb");
 
 //Middleware
 app.use(express.json());
@@ -65,14 +66,26 @@ async function run() {
 
         //Put task api
         app.put("/task/:id", async (req, res) => {
-            const id = req.params.id;
-            const task = req.body;
+            const { id } = req.params;
+            const { category } = req.body;
 
-            const result = await taskCollection.updateOne(
-                { _id: id },
-                { $set: task }
-            );
-            res.send(result);
+            try {
+                const result = await taskCollection.updateOne(
+                    { _id: new ObjectId(id) },
+                    { $set: { category: category } }
+                );
+
+                if (result.modifiedCount === 0) {
+                    return res
+                        .status(404)
+                        .json({ message: "Task not found or already updated" });
+                }
+
+                res.status(200).json({ message: "Task updated successfully" });
+            } catch (error) {
+                console.error("Error updating task:", error);
+                res.status(500).json({ message: "Error updating task", error });
+            }
         });
 
         //Delete task api
