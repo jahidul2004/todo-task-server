@@ -1,6 +1,6 @@
 const express = require("express");
 const app = express();
-const port = process.env.port || 3000;
+const port = process.env.PORT || 3000;
 const cors = require("cors");
 require("dotenv").config();
 const { ObjectId } = require("mongodb");
@@ -75,7 +75,7 @@ async function run() {
                 if (result.length === 0) {
                     return res
                         .status(404)
-                        .send({ message: "No tasks found for this email." });
+                        .send([]);
                 }
                 res.status(200).send(result);
             } catch (error) {
@@ -110,10 +110,30 @@ async function run() {
 
         //Delete task api
         app.delete("/task/:id", async (req, res) => {
-            const id = req.params.id;
+            try {
+                const id = req.params.id;
+                const result = await taskCollection.deleteOne({
+                    _id: new ObjectId(id),
+                });
 
-            const result = await taskCollection.deleteOne({ _id: id });
-            res.send(result);
+                if (result.deletedCount === 1) {
+                    res.send({
+                        success: true,
+                        message: "Task deleted successfully!",
+                    });
+                } else {
+                    res.status(404).send({
+                        success: false,
+                        message: "Task not found!",
+                    });
+                }
+            } catch (error) {
+                console.error("Error deleting task:", error);
+                res.status(500).send({
+                    success: false,
+                    message: "Internal server error",
+                });
+            }
         });
 
         // Send a ping to confirm a successful connection
